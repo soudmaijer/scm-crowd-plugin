@@ -13,6 +13,18 @@
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <description>plugin description</description>
+	<repositories>
+    <repository>
+      <id>maven.scm-manager.org</id>
+      <name>scm-manager release repository</name>
+      <url>http://maven.scm-manager.org/nexus/content/groups/public</url>
+    </repository>
+    <repository>
+      <id>atlassian-public-m2-repo</id>
+      <name>atlassian public maven repository</name>
+      <url>http://repository.atlassian.com/maven2/</url>
+    </repository>
+    </repositories>	
     <properties>
         <scm-manager.version>${project.parent.version}</scm-manager.version>
         <servlet.version>2.5</servlet.version>
