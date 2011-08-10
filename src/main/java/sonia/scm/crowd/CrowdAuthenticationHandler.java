@@ -176,6 +176,15 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
         if (config == null) {
             config = new CrowdPluginConfig();
         }
+
+        initCrowdClient();
+    }
+
+    /**
+     * Initializes the Crowd client. Needs to be called
+     * upon configuration changes.
+     */
+    private void initCrowdClient() {
         crowdClient = new RestCrowdClientFactory().newInstance(config.getCrowdServerUrl(), config.getApplicationName(), config.getApplicationPassword());
     }
 
@@ -184,6 +193,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
      */
     public void storeConfig() {
         store.set(config);
+        initCrowdClient();
     }
 
     //~--- get methods ----------------------------------------------------------
