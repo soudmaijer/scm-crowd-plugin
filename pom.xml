@@ -12,7 +12,7 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
-    <description>plugin description</description>
+    <description>scm-crowd-plugin</description>
     <repositories>
         <repository>
             <id>maven.scm-manager.org</id>
@@ -27,7 +27,6 @@
     </repositories>
     <properties>
         <scm-manager.version>${project.parent.version}</scm-manager.version>
-        <servlet.version>2.5</servlet.version>
         <log4j.version>1.2.16</log4j.version>
         <crowd.version>2.3.1</crowd.version>
     </properties>
@@ -37,6 +36,7 @@
                 <groupId>sonia.scm.maven</groupId>
                 <artifactId>scm-maven-plugin</artifactId>
                 <dependencies>
+                    <!-- Required for Jetty to handle log4j over slf4j -->
                     <dependency>
                         <groupId>log4j</groupId>
                         <artifactId>log4j</artifactId>
@@ -73,12 +73,5 @@
             <version>${scm-manager.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--test scope -->
-        <!--<dependency>-->
-        <!--<groupId>sonia.scm</groupId>-->
-        <!--<artifactId>scm-test</artifactId>-->
-        <!--<version>${scm-manager.version}</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
     </dependencies>
 </project>

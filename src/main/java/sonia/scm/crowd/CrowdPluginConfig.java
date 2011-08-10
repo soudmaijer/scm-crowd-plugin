@@ -86,12 +86,18 @@ public class CrowdPluginConfig {
     //~--- fields ---------------------------------------------------------------
 
     /**
-     * Field description
+     * Crowd applicationName
      */
     @XmlElement(name = "applicationName")
     private String applicationName = "scm-manager";
+    /**
+     * Crowd applicationPassword
+     */
     @XmlElement(name = "applicationPassword")
     private String applicationPassword = "scm-manager";
+    /**
+     * Crowd serverUrl where the REST services are located.
+     */
     @XmlElement(name = "crowdServerUrl")
     private String crowdServerUrl = "http://localhost/crowd/";
 

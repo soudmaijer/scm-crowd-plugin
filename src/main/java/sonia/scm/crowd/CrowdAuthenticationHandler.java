@@ -76,16 +76,10 @@ import java.util.List;
 @Extension
 public class CrowdAuthenticationHandler implements AuthenticationHandler {
 
-    /**
-     * the logger for SampleAuthenticationHandler
-     */
-    private static final Logger logger =
-            LoggerFactory.getLogger(CrowdAuthenticationHandler.class);
-
     //~--- constructors ---------------------------------------------------------
 
     /**
-     * Constructs ...
+     * Constructs the CrowdAuthenticationHandler and loads the config from the store.
      *
      * @param storeFactory
      */
@@ -97,13 +91,13 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     //~--- methods --------------------------------------------------------------
 
     /**
-     * Method description
+     * Authenticates the user in Crowd.
      *
-     * @param request
-     * @param response
-     * @param username
-     * @param password
-     * @return
+     * @param request  http request
+     * @param response http response
+     * @param username username
+     * @param password password
+     * @return the result
      */
     @Override
     public AuthenticationResult authenticate(HttpServletRequest request,
@@ -161,9 +155,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     }
 
     /**
-     * Method description
-     *
-     * @throws IOException
+     * {@inheritDoc}
      */
     @Override
     public void close() throws IOException {
@@ -171,9 +163,10 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     }
 
     /**
-     * Method description
+     * Initializes the plugin with the Crowd config.
+     * Constructs a crowdClient that is reused.
      *
-     * @param context
+     * @param context The plugin context.
      */
     @Override
     public synchronized void init(SCMContextProvider context) {
@@ -187,7 +180,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     }
 
     /**
-     * Method description
+     * Saves the Crowd config.
      */
     public void storeConfig() {
         store.set(config);
@@ -196,7 +189,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     //~--- get methods ----------------------------------------------------------
 
     /**
-     * Method description
+     * Returns the Crowd config.
      *
      * @return
      */
@@ -217,7 +210,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     //~--- set methods ----------------------------------------------------------
 
     /**
-     * Method description
+     * Set the Crowd config.
      *
      * @param config
      */
@@ -228,8 +221,11 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     //~--- methods --------------------------------------------------------------
 
     /**
-     * @param crowdGroups
-     * @return
+     * Populates the List with groups from Crowd Group objects. Scm manager
+     * only needs String values.
+     *
+     * @param crowdGroups Crowd groups
+     * @return List of String values
      */
     private List<String> populateGroups(List<com.atlassian.crowd.model.group.Group> crowdGroups) {
         List<String> groups = new ArrayList<String>();
@@ -242,8 +238,10 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     }
 
     /**
-     * @param crowdUser
-     * @return
+     * Populates an scm User with the properties of a Crowd User.
+     *
+     * @param crowdUser The Crowd user to copy the properties from. Should not be null.
+     * @return a populated Crowd user.
      */
     private User populateUser(com.atlassian.crowd.model.user.User crowdUser) {
         User scmUser = new User();
@@ -255,20 +253,26 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
 
     //~--- fields ---------------------------------------------------------------
 
+    /**
+     * The logger for CrowdAuthenticationHandler
+     */
+    private static final Logger logger =
+            LoggerFactory.getLogger(CrowdAuthenticationHandler.class);
+
     private CrowdClient crowdClient;
 
     /**
-     * Field description
+     * The type of user.
      */
     public static final String TYPE = "crowd";
 
     /**
-     * Field description
+     * Crowd configuration.
      */
     private CrowdPluginConfig config;
 
     /**
-     * Field description
+     * Store for the Crowd configuration.
      */
     private Store<CrowdPluginConfig> store;
 

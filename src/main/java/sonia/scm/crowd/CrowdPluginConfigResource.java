@@ -60,7 +60,7 @@ import java.io.IOException;
 public class CrowdPluginConfigResource {
 
     /**
-     * Constructs ...
+     * Constructs the Config REST service.
      *
      * @param authenticationHandler
      */
@@ -72,9 +72,9 @@ public class CrowdPluginConfigResource {
     //~--- get methods ----------------------------------------------------------
 
     /**
-     * Method description
+     * Returns the Crowd config.
      *
-     * @return
+     * @return a config Object in JSON format.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -85,12 +85,12 @@ public class CrowdPluginConfigResource {
     //~--- set methods ----------------------------------------------------------
 
     /**
-     * Method description
+     * Stores the config
      *
-     * @param uriInfo
-     * @param config
-     * @return
-     * @throws IOException
+     * @param uriInfo uriInfo
+     * @param config the new configuration
+     * @return the result
+     * @throws IOException when response could not be created.
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -105,7 +105,7 @@ public class CrowdPluginConfigResource {
     //~--- fields ---------------------------------------------------------------
 
     /**
-     * Field description
+     * The CrowdAuthenticationHandler which is the actual plugin.
      */
     private CrowdAuthenticationHandler authenticationHandler;
 }
