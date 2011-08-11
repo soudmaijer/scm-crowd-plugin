@@ -76,6 +76,7 @@ import java.util.List;
 @Extension
 public class CrowdAuthenticationHandler implements AuthenticationHandler {
 
+
     //~--- constructors ---------------------------------------------------------
 
     /**
