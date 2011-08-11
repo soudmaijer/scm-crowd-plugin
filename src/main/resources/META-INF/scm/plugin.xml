@@ -19,7 +19,7 @@
     </resources>
 
     <conditions>
-      <min-version>1.2</min-version>
+      <min-version>1.6</min-version>
     </conditions>
 
 </plugin>
