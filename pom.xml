@@ -5,7 +5,7 @@
     <parent>
         <artifactId>scm-plugins</artifactId>
         <groupId>sonia.scm.plugins</groupId>
-        <version>1.6-SNAPSHOT</version>
+        <version>1.6</version>
     </parent>
     <groupId>sonia.scm.plugins</groupId>
     <artifactId>scm-crowd-plugin</artifactId>
@@ -29,21 +29,6 @@
         <!-- crowd dependency, backward compatible with 2.2 -->
         <crowd.version>2.3.1</crowd.version>
     </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>sonia.scm.maven</groupId>
-                <artifactId>scm-maven-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                        <version>${slf4j.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <!-- compile scope -->
         <dependency>
