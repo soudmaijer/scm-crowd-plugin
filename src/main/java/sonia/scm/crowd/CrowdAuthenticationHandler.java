@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import sonia.scm.util.Util;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -204,10 +205,10 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
         if (scmConfiguration.isEnableProxy()) {
             p.setProperty("http.proxy.host", scmConfiguration.getProxyServer());
             p.setProperty("http.proxy.port", String.valueOf(scmConfiguration.getProxyPort()));
-            if (scmConfiguration.getProxyUser() != null) {
+            if (Util.isNotEmpty(scmConfiguration.getProxyUser())) {
                 p.setProperty("http.proxy.username", scmConfiguration.getProxyUser());
             }
-            if (scmConfiguration.getProxyPassword() != null) {
+            if (Util.isNotEmpty(scmConfiguration.getProxyPassword())) {
                 p.setProperty("http.proxy.password", scmConfiguration.getProxyPassword());
             }
         }
