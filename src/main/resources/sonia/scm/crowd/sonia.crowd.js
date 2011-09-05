@@ -35,8 +35,20 @@ Sonia.crowd.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
 
   titleText: 'Crowd Authentication',
   applicationNameAttributeText: 'Application Name',
-  crowdServerUrlAttributeText: 'Crowd server URL',
   applicationPasswordAttributeText: 'Application Password',
+  crowdServerUrlAttributeText: 'Crowd server URL',
+  sessionValidationintervalAttributeText: 'Session validation interval',
+  sessionValidationintervalAttributeHelpText: 'The number of minutes to cache authentication validation in the session. If this value is set to 0, each HTTP request will be authenticated with the Crowd server.',
+  cookieTokenkeyText: 'Cookie Tokenkey',
+  cookieTokenkeyHelpText: 'When using Crowd for single sign-on (SSO), you can specify the SSO cookie name for each application. Under the standard configuration, Crowd will use a single, default cookie name for all Crowd-connected applications. You can override the default with your own cookie name. As well as allowing you to define the SSO cookie name, this feature also allows you to divide your applications into different SSO groups. For example, you might use one SSO token for your public websites and another for your internal websites.',
+  httpProxyHostText: 'Proxy host',
+  httpProxyPortText: 'Proxy port',
+  httpProxyUsernameText: 'Proxy username',
+  httpProxyPasswordText: 'Proxy password',
+  httpMaxConnectionsText: 'Max connections',
+  httpMaxConnectionsHelpText: 'The maximum number of HTTP connections in the connection pool for communication with the Crowd server.',
+  httpTimeoutText: 'Connection timeout',
+  httpTimeoutHelpText: 'The HTTP connection timeout (milliseconds) used for communication with the Crowd server. A value of zero indicates that there is no connection timeout.',
 
   initComponent: function(){
 
@@ -61,6 +73,55 @@ Sonia.crowd.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name : 'crowdServerUrl',
         allowBlank : false,
         helpText: this.crowdServerUrlAttributeText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.sessionValidationintervalAttributeText,
+        name : 'sessionValidationinterval',
+        allowBlank : false,
+        helpText: this.sessionValidationintervalAttributeHelpText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.cookieTokenkeyText,
+        name : 'cookieTokenkey',
+        allowBlank : false,
+        helpText: this.cookieTokenkeyHelpText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.httpProxyHostText,
+        name : 'httpProxyHost',
+        allowBlank : true,
+        helpText: this.httpProxyHostText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.httpProxyPortText,
+        name : 'httpProxyPort',
+        allowBlank : true,
+        helpText: this.httpProxyPortText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.httpProxyUsernameText,
+        name : 'httpProxyUsername',
+        allowBlank : true,
+        helpText: this.httpProxyUsernameText
+      },{
+        xtype : 'textfield',
+        inputType: 'password',
+        fieldLabel : this.httpProxyPasswordText,
+        name : 'httpProxyPassword',
+        allowBlank : true,
+        helpText: this.httpProxyPasswordText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.httpMaxConnectionsText,
+        name : 'httpMaxConnections',
+        allowBlank : false,
+        helpText: this.httpMaxConnectionsHelpText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.httpTimeoutText,
+        name : 'httpTimeout',
+        allowBlank : false,
+        helpText: this.httpTimeoutHelpText
       }]
     }
 

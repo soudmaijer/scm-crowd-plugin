@@ -40,6 +40,7 @@ import com.atlassian.crowd.exception.InvalidAuthenticationException;
 import com.atlassian.crowd.exception.OperationFailedException;
 import com.atlassian.crowd.exception.UserNotFoundException;
 import com.atlassian.crowd.integration.rest.service.factory.RestCrowdClientFactory;
+import com.atlassian.crowd.service.client.ClientPropertiesImpl;
 import com.atlassian.crowd.service.client.CrowdClient;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -59,6 +60,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -186,7 +188,22 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
      * upon configuration changes.
      */
     private void initCrowdClient() {
-        crowdClient = new RestCrowdClientFactory().newInstance(config.getCrowdServerUrl(), config.getApplicationName(), config.getApplicationPassword());
+
+        Properties p = new Properties();
+        p.setProperty("crowd.server.url", config.getCrowdServerUrl());
+        p.setProperty("application.name", config.getApplicationName());
+        p.setProperty("application.password", config.getApplicationPassword());
+        p.setProperty("session.validationinterval", config.getSessionValidationinterval());
+        p.setProperty("cookie.tokenkey", config.getCookieTokenkey());
+
+        p.setProperty("http.proxy.host", config.getHttpProxyHost());
+        p.setProperty("http.proxy.port", config.getHttpProxyPort());
+        p.setProperty("http.proxy.username", config.getHttpProxyUsername());
+        p.setProperty("http.proxy.password", config.getHttpProxyPassword());
+        p.setProperty("http.max.connections", config.getHttpMaxConnections());
+        p.setProperty("http.timeout", config.getHttpTimeout());
+
+        crowdClient = new RestCrowdClientFactory().newInstance(ClientPropertiesImpl.newInstanceFromProperties(p));
     }
 
     /**

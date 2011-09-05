@@ -39,14 +39,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * <p>Configuration class for the Crowd integration. For Crowd integration you typically
- * configure the following attributes:</p>
+ * <p>Configuration class for the Crowd integration. For Crowd integration  the minimal required
+ * properties are:</p>
  * <p/>
  * <ul>
  * <li>Crowd application name</li>
  * <li>Crowd application password</li>
  * <li>Crowd server url</li>
  * </ul>
+ * <p>For more information see: http://confluence.atlassian.com/display/CROWD/The+crowd.properties+File</p>
  *
  * @author Stephan Oudmaijer
  */
@@ -68,6 +69,38 @@ public class CrowdPluginConfig {
         return crowdServerUrl;
     }
 
+    public String getSessionValidationinterval() {
+        return sessionValidationinterval;
+    }
+
+    public String getCookieTokenkey() {
+        return cookieTokenkey;
+    }
+
+    public String getHttpProxyHost() {
+        return httpProxyHost;
+    }
+
+    public String getHttpProxyPort() {
+        return httpProxyPort;
+    }
+
+    public String getHttpProxyUsername() {
+        return httpProxyUsername;
+    }
+
+    public String getHttpProxyPassword() {
+        return httpProxyPassword;
+    }
+
+    public String getHttpMaxConnections() {
+        return httpMaxConnections;
+    }
+
+    public String getHttpTimeout() {
+        return httpTimeout;
+    }
+
     //~--- set methods ----------------------------------------------------------
 
     public void setApplicationName(String applicationName) {
@@ -82,6 +115,37 @@ public class CrowdPluginConfig {
         this.crowdServerUrl = crowdServerUrl;
     }
 
+    public void setSessionValidationinterval(String sessionValidationinterval) {
+        this.sessionValidationinterval = sessionValidationinterval;
+    }
+
+    public void setCookieTokenkey(String cookieTokenkey) {
+        this.cookieTokenkey = cookieTokenkey;
+    }
+
+    public void setHttpProxyHost(String httpProxyHost) {
+        this.httpProxyHost = httpProxyHost;
+    }
+
+    public void setHttpProxyPort(String httpProxyPort) {
+        this.httpProxyPort = httpProxyPort;
+    }
+
+    public void setHttpProxyUsername(String httpProxyUsername) {
+        this.httpProxyUsername = httpProxyUsername;
+    }
+
+    public void setHttpProxyPassword(String httpProxyPassword) {
+        this.httpProxyPassword = httpProxyPassword;
+    }
+
+    public void setHttpMaxConnections(String httpMaxConnections) {
+        this.httpMaxConnections = httpMaxConnections;
+    }
+
+    public void setHttpTimeout(String httpTimeout) {
+        this.httpTimeout = httpTimeout;
+    }
 
     //~--- fields ---------------------------------------------------------------
 
@@ -100,5 +164,45 @@ public class CrowdPluginConfig {
      */
     @XmlElement(name = "crowdServerUrl")
     private String crowdServerUrl = "http://localhost/crowd/";
-
+    /**
+     * The number of minutes to cache authentication validation in the session. If this value is set to 0, each HTTP request will be authenticated with the Crowd server.
+     */
+    @XmlElement(name = "sessionValidationinterval")
+    private String sessionValidationinterval = "15";
+    /**
+     * When using Crowd for single sign-on (SSO), you can specify the SSO cookie name for each application. Under the standard configuration, Crowd will use a single, default cookie name for all Crowd-connected applications. You can override the default with your own cookie name.
+     * As well as allowing you to define the SSO cookie name, this feature also allows you to divide your applications into different SSO groups. For example, you might use one SSO token for your public websites and another for your internal websites.
+     */
+    @XmlElement(name = "cookieTokenkey")
+    private String cookieTokenkey = "crowd.token_key";
+    /**
+     * The name of the proxy server used to transport SOAP traffic to the Crowd server.
+     */
+    @XmlElement(name = "httpProxyHost")
+    private String httpProxyHost = "";
+    /**
+     * The connection port of the proxy server (must be specified if a proxy host is specified).
+     */
+    @XmlElement(name = "httpProxyPort")
+    private String httpProxyPort = "";
+    /**
+     * The username used to authenticate with the proxy server (if the proxy server requires authentication).
+     */
+    @XmlElement(name = "httpProxyUsername")
+    private String httpProxyUsername = "";
+    /**
+     * The password used to authenticate with the proxy server (if the proxy server requires authentication).
+     */
+    @XmlElement(name = "httpProxyPassword")
+    private String httpProxyPassword = "";
+    /**
+     * The maximum number of HTTP connections in the connection pool for communication with the Crowd server.
+     */
+    @XmlElement(name = "httpMaxConnections")
+    private String httpMaxConnections = "20";
+    /**
+     * The HTTP connection timeout (milliseconds) used for communication with the Crowd server. A value of zero indicates that there is no connection timeout.
+     */
+    @XmlElement(name = "httpTimeout")
+    private String httpTimeout = "5000";
 }

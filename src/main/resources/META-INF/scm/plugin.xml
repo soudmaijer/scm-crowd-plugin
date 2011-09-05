@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-
     <information>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
@@ -8,18 +7,15 @@
         <name>${project.name}</name>
         <description>${project.description}</description>
         <author>Stephan Oudmaijer</author>
+        <url>${project.url}</url>
     </information>
-
     <packages>
         <package>sonia.scm.crowd</package>
     </packages>
-
     <resources>
         <script>/sonia/scm/crowd/sonia.crowd.js</script>
     </resources>
-
     <conditions>
-      <min-version>1.6</min-version>
+        <min-version>1.6</min-version>
     </conditions>
-
 </plugin>
