@@ -87,31 +87,6 @@ Sonia.crowd.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         helpText: this.cookieTokenkeyHelpText
       },{
         xtype : 'textfield',
-        fieldLabel : this.httpProxyHostText,
-        name : 'httpProxyHost',
-        allowBlank : true,
-        helpText: this.httpProxyHostText
-      },{
-        xtype : 'textfield',
-        fieldLabel : this.httpProxyPortText,
-        name : 'httpProxyPort',
-        allowBlank : true,
-        helpText: this.httpProxyPortText
-      },{
-        xtype : 'textfield',
-        fieldLabel : this.httpProxyUsernameText,
-        name : 'httpProxyUsername',
-        allowBlank : true,
-        helpText: this.httpProxyUsernameText
-      },{
-        xtype : 'textfield',
-        inputType: 'password',
-        fieldLabel : this.httpProxyPasswordText,
-        name : 'httpProxyPassword',
-        allowBlank : true,
-        helpText: this.httpProxyPasswordText
-      },{
-        xtype : 'textfield',
         fieldLabel : this.httpMaxConnectionsText,
         name : 'httpMaxConnections',
         allowBlank : false,

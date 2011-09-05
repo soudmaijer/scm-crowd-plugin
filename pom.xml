@@ -4,14 +4,14 @@
     <parent>
         <artifactId>scm-plugins</artifactId>
         <groupId>sonia.scm.plugins</groupId>
-        <version>1.6</version>
+        <version>1.7-SNAPSHOT</version>
     </parent>
     <groupId>sonia.scm.plugins</groupId>
     <artifactId>scm-crowd-plugin</artifactId>
     <packaging>jar</packaging>
     <version>1.1-SNAPSHOT</version>
     <name>${project.artifactId}</name>
-    <description>scm-crowd-plugin</description>
+    <description>Plugin that provides support for authentication against Atlassian Crowd</description>
     <url>https://github.com/soudmaijer/scm-crowd-plugin</url>
     <scm>
       <connection>scm:git:https://github.com/soudmaijer/scm-crowd-plugin.git</connection>

@@ -77,22 +77,6 @@ public class CrowdPluginConfig {
         return cookieTokenkey;
     }
 
-    public String getHttpProxyHost() {
-        return httpProxyHost;
-    }
-
-    public String getHttpProxyPort() {
-        return httpProxyPort;
-    }
-
-    public String getHttpProxyUsername() {
-        return httpProxyUsername;
-    }
-
-    public String getHttpProxyPassword() {
-        return httpProxyPassword;
-    }
-
     public String getHttpMaxConnections() {
         return httpMaxConnections;
     }
@@ -121,22 +105,6 @@ public class CrowdPluginConfig {
 
     public void setCookieTokenkey(String cookieTokenkey) {
         this.cookieTokenkey = cookieTokenkey;
-    }
-
-    public void setHttpProxyHost(String httpProxyHost) {
-        this.httpProxyHost = httpProxyHost;
-    }
-
-    public void setHttpProxyPort(String httpProxyPort) {
-        this.httpProxyPort = httpProxyPort;
-    }
-
-    public void setHttpProxyUsername(String httpProxyUsername) {
-        this.httpProxyUsername = httpProxyUsername;
-    }
-
-    public void setHttpProxyPassword(String httpProxyPassword) {
-        this.httpProxyPassword = httpProxyPassword;
     }
 
     public void setHttpMaxConnections(String httpMaxConnections) {
@@ -175,26 +143,6 @@ public class CrowdPluginConfig {
      */
     @XmlElement(name = "cookieTokenkey")
     private String cookieTokenkey = "crowd.token_key";
-    /**
-     * The name of the proxy server used to transport SOAP traffic to the Crowd server.
-     */
-    @XmlElement(name = "httpProxyHost")
-    private String httpProxyHost = "";
-    /**
-     * The connection port of the proxy server (must be specified if a proxy host is specified).
-     */
-    @XmlElement(name = "httpProxyPort")
-    private String httpProxyPort = "";
-    /**
-     * The username used to authenticate with the proxy server (if the proxy server requires authentication).
-     */
-    @XmlElement(name = "httpProxyUsername")
-    private String httpProxyUsername = "";
-    /**
-     * The password used to authenticate with the proxy server (if the proxy server requires authentication).
-     */
-    @XmlElement(name = "httpProxyPassword")
-    private String httpProxyPassword = "";
     /**
      * The maximum number of HTTP connections in the connection pool for communication with the Crowd server.
      */

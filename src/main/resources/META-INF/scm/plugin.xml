@@ -16,6 +16,6 @@
         <script>/sonia/scm/crowd/sonia.crowd.js</script>
     </resources>
     <conditions>
-        <min-version>1.6</min-version>
+        <min-version>1.7</min-version>
     </conditions>
 </plugin>

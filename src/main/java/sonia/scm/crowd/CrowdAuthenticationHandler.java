@@ -47,6 +47,7 @@ import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.SCMContextProvider;
+import sonia.scm.config.ScmConfiguration;
 import sonia.scm.plugin.ext.Extension;
 import sonia.scm.store.Store;
 import sonia.scm.store.StoreFactory;
@@ -87,8 +88,10 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
      * @param storeFactory
      */
     @Inject
-    public CrowdAuthenticationHandler(StoreFactory storeFactory) {
+    public CrowdAuthenticationHandler(ScmConfiguration configuration, StoreFactory storeFactory) {
+        this.scmConfiguration = configuration;
         store = storeFactory.getStore(CrowdPluginConfig.class, TYPE);
+
     }
 
     //~--- methods --------------------------------------------------------------
@@ -195,13 +198,19 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
         p.setProperty("application.password", config.getApplicationPassword());
         p.setProperty("session.validationinterval", config.getSessionValidationinterval());
         p.setProperty("cookie.tokenkey", config.getCookieTokenkey());
-
-        p.setProperty("http.proxy.host", config.getHttpProxyHost());
-        p.setProperty("http.proxy.port", config.getHttpProxyPort());
-        p.setProperty("http.proxy.username", config.getHttpProxyUsername());
-        p.setProperty("http.proxy.password", config.getHttpProxyPassword());
         p.setProperty("http.max.connections", config.getHttpMaxConnections());
         p.setProperty("http.timeout", config.getHttpTimeout());
+
+        if (scmConfiguration.isEnableProxy()) {
+            p.setProperty("http.proxy.host", scmConfiguration.getProxyServer());
+            p.setProperty("http.proxy.port", String.valueOf(scmConfiguration.getProxyPort()));
+            if (scmConfiguration.getProxyUser() != null) {
+                p.setProperty("http.proxy.username", scmConfiguration.getProxyUser());
+            }
+            if (scmConfiguration.getProxyPassword() != null) {
+                p.setProperty("http.proxy.password", scmConfiguration.getProxyPassword());
+            }
+        }
 
         crowdClient = new RestCrowdClientFactory().newInstance(ClientPropertiesImpl.newInstanceFromProperties(p));
     }
@@ -303,5 +312,10 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
      * Store for the Crowd configuration.
      */
     private Store<CrowdPluginConfig> store;
+
+    /**
+     * ScmManager configuration.
+     */
+    private ScmConfiguration scmConfiguration;
 
 }
