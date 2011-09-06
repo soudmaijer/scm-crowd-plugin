@@ -7,6 +7,7 @@ package sonia.scm.crowd;
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -31,8 +32,6 @@ package sonia.scm.crowd;
  *
  */
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.ExpiredCredentialException;
 import com.atlassian.crowd.exception.InactiveAccountException;
@@ -46,6 +45,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sonia.scm.ConfigChangedListener;
 import sonia.scm.SCMContextProvider;
 import sonia.scm.config.ScmConfiguration;
 import sonia.scm.plugin.ext.Extension;
@@ -63,9 +63,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-//~--- JDK imports ------------------------------------------------------------
-
-
 /**
  * <p>Performs Crowd authentication. Populates the scm-manager user
  * Object with the Crowd user properties and Crowd groups assigned
@@ -77,7 +74,7 @@ import java.util.Properties;
  */
 @Singleton
 @Extension
-public class CrowdAuthenticationHandler implements AuthenticationHandler {
+public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener {
 
 
     //~--- constructors ---------------------------------------------------------
@@ -85,13 +82,14 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     /**
      * Constructs the CrowdAuthenticationHandler and loads the config from the store.
      *
-     * @param storeFactory
+     * @param scmConfiguration the global configuration.
+     * @param storeFactory store for the configuration.
      */
     @Inject
-    public CrowdAuthenticationHandler(ScmConfiguration configuration, StoreFactory storeFactory) {
-        this.scmConfiguration = configuration;
+    public CrowdAuthenticationHandler(ScmConfiguration scmConfiguration, StoreFactory storeFactory) {
+        this.scmConfiguration = scmConfiguration;
+        this.scmConfiguration.addListener(this);
         store = storeFactory.getStore(CrowdPluginConfig.class, TYPE);
-
     }
 
     //~--- methods --------------------------------------------------------------
@@ -110,7 +108,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
                                              HttpServletResponse response, String username, String password) {
         AssertUtil.assertIsNotEmpty(username);
         AssertUtil.assertIsNotEmpty(password);
-        AuthenticationResult result = null;
+        AuthenticationResult result;
 
         if (logger.isDebugEnabled()) {
             logger.debug("authenticate for user: " + username);
@@ -165,7 +163,18 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
      */
     @Override
     public void close() throws IOException {
-        // nothing todo
+        // nothing to close
+    }
+
+    /**
+     * Reinitialize the Crowd client on config changes.
+     *
+     * @param configuration the new configuration object.
+     */
+    @Override
+    public void configChanged(Object configuration) {
+        this.scmConfiguration = (ScmConfiguration) configuration;
+        initCrowdClient();
     }
 
     /**
@@ -228,7 +237,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     /**
      * Returns the Crowd config.
      *
-     * @return
+     * @return the Crowd configuration.
      */
     public CrowdPluginConfig getConfig() {
         return config;
@@ -237,7 +246,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     /**
      * Method description
      *
-     * @return
+     * @return the user type.
      */
     @Override
     public String getType() {
@@ -249,7 +258,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler {
     /**
      * Set the Crowd config.
      *
-     * @param config
+     * @param config the Configuration to set.
      */
     public void setConfig(CrowdPluginConfig config) {
         this.config = config;
