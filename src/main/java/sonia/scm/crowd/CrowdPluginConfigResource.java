@@ -62,7 +62,7 @@ public class CrowdPluginConfigResource {
     /**
      * Constructs the Config REST service.
      *
-     * @param authenticationHandler
+     * @param authenticationHandler CrowdAuthenticationHandler
      */
     @Inject
     public CrowdPluginConfigResource(CrowdAuthenticationHandler authenticationHandler) {
