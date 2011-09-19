@@ -32,15 +32,24 @@ package sonia.scm.crowd;
  *
  */
 
+import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.ExpiredCredentialException;
 import com.atlassian.crowd.exception.InactiveAccountException;
 import com.atlassian.crowd.exception.InvalidAuthenticationException;
+import com.atlassian.crowd.exception.InvalidTokenException;
 import com.atlassian.crowd.exception.OperationFailedException;
 import com.atlassian.crowd.exception.UserNotFoundException;
+import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
+import com.atlassian.crowd.integration.http.CrowdHttpAuthenticatorImpl;
+import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelper;
+import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelperImpl;
+import com.atlassian.crowd.integration.http.util.CrowdHttpValidationFactorExtractorImpl;
 import com.atlassian.crowd.integration.rest.service.factory.RestCrowdClientFactory;
+import com.atlassian.crowd.service.client.ClientProperties;
 import com.atlassian.crowd.service.client.ClientPropertiesImpl;
 import com.atlassian.crowd.service.client.CrowdClient;
+import com.atlassian.crowd.service.factory.CrowdClientFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
@@ -53,6 +62,7 @@ import sonia.scm.store.Store;
 import sonia.scm.store.StoreFactory;
 import sonia.scm.user.User;
 import sonia.scm.util.AssertUtil;
+import sonia.scm.util.Util;
 import sonia.scm.web.security.AuthenticationHandler;
 import sonia.scm.web.security.AuthenticationResult;
 
@@ -62,7 +72,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import sonia.scm.util.Util;
 
 /**
  * <p>Performs Crowd authentication. Populates the scm-manager user
@@ -77,14 +86,13 @@ import sonia.scm.util.Util;
 @Extension
 public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener {
 
-
     //~--- constructors ---------------------------------------------------------
 
     /**
      * Constructs the CrowdAuthenticationHandler and loads the config from the store.
      *
      * @param scmConfiguration the global configuration.
-     * @param storeFactory store for the configuration.
+     * @param storeFactory     store for the configuration.
      */
     @Inject
     public CrowdAuthenticationHandler(ScmConfiguration scmConfiguration, StoreFactory storeFactory) {
@@ -107,56 +115,74 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
     @Override
     public AuthenticationResult authenticate(HttpServletRequest request,
                                              HttpServletResponse response, String username, String password) {
-        AssertUtil.assertIsNotEmpty(username);
-        AssertUtil.assertIsNotEmpty(password);
-        AuthenticationResult result;
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("authenticate for user: " + username);
-        }
 
         try {
-            com.atlassian.crowd.model.user.User crowdUser = crowdClient.authenticateUser(username, password);
+
+            com.atlassian.crowd.model.user.User crowdUser;
+
+            // try SSO
+            if (CROWD_SSO.equals(username) && CROWD_SSO.equals(password)) {
+                username = null;
+                password = null;
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Crowd SSO authenticate for token: "+ crowdHttpAuthenticator.getToken(request));
+                }
+                crowdUser = crowdHttpAuthenticator.getUser(request);
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Crowd authenticate for user: " + username);
+                }
+
+                AssertUtil.assertIsNotEmpty(username);
+                AssertUtil.assertIsNotEmpty(password);
+                crowdUser = crowdHttpAuthenticator.authenticate(request, response, username, password);
+            }
+
             if (logger.isDebugEnabled()) {
-                logger.debug("crowdUser: " + crowdUser);
+                logger.debug("Crowd user: " + crowdUser);
             }
             if (crowdUser != null && crowdUser.isActive()) {
-                List<com.atlassian.crowd.model.group.Group> groups = crowdClient.getGroupsForUser(username, 0, -1);
-                result = new AuthenticationResult(populateUser(crowdUser), populateGroups(groups));
+                List<com.atlassian.crowd.model.group.Group> groups = crowdClient.getGroupsForUser(crowdUser.getName(), 0, -1);
+                return new AuthenticationResult(populateUser(crowdUser), populateGroups(groups));
             } else {
-                result = AuthenticationResult.NOT_FOUND;
+                return AuthenticationResult.NOT_FOUND;
             }
 
         } catch (UserNotFoundException unoe) {
             if (logger.isDebugEnabled()) {
                 logger.debug("User not found in crowd: " + username);
             }
-            result = AuthenticationResult.NOT_FOUND;
+            return AuthenticationResult.NOT_FOUND;
         } catch (InactiveAccountException unoe) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Not an active user in crowd: " + username);
             }
-            result = AuthenticationResult.NOT_FOUND;
+            return AuthenticationResult.NOT_FOUND;
         } catch (InvalidAuthenticationException iae) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Incorrect credentials for user in crowd: " + username);
             }
-            result = AuthenticationResult.FAILED;
+            return AuthenticationResult.FAILED;
         } catch (ExpiredCredentialException iae) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Credentials expired for user in crowd: " + username);
             }
-            result = AuthenticationResult.FAILED;
+            return AuthenticationResult.FAILED;
         } catch (ApplicationPermissionException e) {
             if (logger.isWarnEnabled()) {
                 logger.warn("Application not permitted to perform authentication in crowd");
             }
-            result = AuthenticationResult.FAILED;
+            return AuthenticationResult.FAILED;
         } catch (OperationFailedException e) {
             logger.error(e.getMessage());
-            result = AuthenticationResult.FAILED;
+            return AuthenticationResult.FAILED;
+        } catch (InvalidTokenException e) {
+            logger.error(e.getMessage());
+            return AuthenticationResult.FAILED;
+        } catch (ApplicationAccessDeniedException e) {
+            logger.error(e.getMessage());
+            return AuthenticationResult.FAILED;
         }
-        return result;
     }
 
     /**
@@ -222,7 +248,12 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
             }
         }
 
-        crowdClient = new RestCrowdClientFactory().newInstance(ClientPropertiesImpl.newInstanceFromProperties(p));
+
+        ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(p);
+        CrowdClientFactory clientFactory = new RestCrowdClientFactory();
+        crowdClient = clientFactory.newInstance(clientProperties);
+        CrowdHttpTokenHelper tokenHelper = CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance());
+        crowdHttpAuthenticator  = new CrowdHttpAuthenticatorImpl(crowdClient, clientProperties, tokenHelper);
     }
 
     /**
@@ -300,6 +331,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
 
     //~--- fields ---------------------------------------------------------------
 
+    public static final String CROWD_SSO = "CROWD_SSO";
+
     /**
      * The logger for CrowdAuthenticationHandler
      */
@@ -307,6 +340,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
             LoggerFactory.getLogger(CrowdAuthenticationHandler.class);
 
     private CrowdClient crowdClient;
+    private CrowdHttpAuthenticator crowdHttpAuthenticator;
 
     /**
      * The type of user.
@@ -327,5 +361,4 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      * ScmManager configuration.
      */
     private ScmConfiguration scmConfiguration;
-
 }
