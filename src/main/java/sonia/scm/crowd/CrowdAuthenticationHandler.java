@@ -42,14 +42,12 @@ import com.atlassian.crowd.exception.OperationFailedException;
 import com.atlassian.crowd.exception.UserNotFoundException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticatorImpl;
-import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelper;
 import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelperImpl;
 import com.atlassian.crowd.integration.http.util.CrowdHttpValidationFactorExtractorImpl;
 import com.atlassian.crowd.integration.rest.service.factory.RestCrowdClientFactory;
 import com.atlassian.crowd.service.client.ClientProperties;
 import com.atlassian.crowd.service.client.ClientPropertiesImpl;
 import com.atlassian.crowd.service.client.CrowdClient;
-import com.atlassian.crowd.service.factory.CrowdClientFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
@@ -174,13 +172,19 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
             }
             return AuthenticationResult.FAILED;
         } catch (OperationFailedException e) {
-            logger.error(e.getMessage());
+            if (logger.isWarnEnabled()) {
+                logger.warn("Operation failed: "+ e.getMessage());
+            }
             return AuthenticationResult.FAILED;
         } catch (InvalidTokenException e) {
-            logger.error(e.getMessage());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invalid token found in request. "+ e.getMessage());
+            }
             return AuthenticationResult.FAILED;
         } catch (ApplicationAccessDeniedException e) {
-            logger.error(e.getMessage());
+            if (logger.isWarnEnabled()) {
+                logger.warn("Application not permitted to access Crowd: "+ e.getMessage());
+            }
             return AuthenticationResult.FAILED;
         }
     }
@@ -248,18 +252,16 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
             }
         }
 
-
         ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(p);
-        CrowdClientFactory clientFactory = new RestCrowdClientFactory();
-        crowdClient = clientFactory.newInstance(clientProperties);
-        CrowdHttpTokenHelper tokenHelper = CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance());
-        crowdHttpAuthenticator  = new CrowdHttpAuthenticatorImpl(crowdClient, clientProperties, tokenHelper);
+        crowdClient = new RestCrowdClientFactory().newInstance(clientProperties);
+        crowdHttpAuthenticator  = new CrowdHttpAuthenticatorImpl(crowdClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
     }
 
     /**
      * Saves the Crowd config.
      */
-    public void storeConfig() {
+    public void storeConfig(CrowdPluginConfig config) {
+        this.config = config;
         store.set(config);
         initCrowdClient();
     }

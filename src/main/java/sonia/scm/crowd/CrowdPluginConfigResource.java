@@ -96,9 +96,7 @@ public class CrowdPluginConfigResource {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response setConfig(@Context UriInfo uriInfo, CrowdPluginConfig config)
             throws IOException {
-        authenticationHandler.setConfig(config);
-        authenticationHandler.storeConfig();
-
+        authenticationHandler.storeConfig(config);
         return Response.created(uriInfo.getRequestUri()).build();
     }
 

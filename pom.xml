@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
     <version>1.2-SNAPSHOT</version>
     <name>${project.artifactId}</name>
-    <description>Plugin that provides support for authentication against Atlassian Crowd</description>
+    <description>Plugin that provides support for (SSO) authentication against Atlassian Crowd.</description>
     <url>https://github.com/soudmaijer/scm-crowd-plugin</url>
     <scm>
       <connection>scm:git:https://github.com/soudmaijer/scm-crowd-plugin.git</connection>
@@ -60,6 +60,13 @@
             <artifactId>scm-core</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
