@@ -32,7 +32,7 @@
     </repositories>
     <properties>
         <!-- crowd dependency, backward compatible with 2.2 -->
-        <crowd.version>2.3.3</crowd.version>
+        <crowd.version>2.3.4</crowd.version>
     </properties>
     <dependencies>
         <!-- compile scope -->
