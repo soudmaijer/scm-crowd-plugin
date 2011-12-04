@@ -8,6 +8,7 @@
         <description>${project.description}</description>
         <author>Stephan Oudmaijer</author>
         <url>${project.url}</url>
+        <category>Authentication</category>
     </information>
     <packages>
         <package>sonia.scm.crowd</package>
