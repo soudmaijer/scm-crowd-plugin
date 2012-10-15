@@ -73,6 +73,10 @@ public class CrowdPluginConfig {
         return sessionValidationinterval;
     }
 
+    public String getSessionLastvalidation() {
+        return sessionLastvalidation;
+    }
+
     public String getCookieTokenkey() {
         return cookieTokenkey;
     }
@@ -101,6 +105,10 @@ public class CrowdPluginConfig {
 
     public void setSessionValidationinterval(String sessionValidationinterval) {
         this.sessionValidationinterval = sessionValidationinterval;
+    }
+
+    public void setSessionLastvalidation(String sessionLastvalidation) {
+        this.sessionLastvalidation = sessionLastvalidation;
     }
 
     public void setCookieTokenkey(String cookieTokenkey) {
@@ -137,6 +145,11 @@ public class CrowdPluginConfig {
      */
     @XmlElement(name = "sessionValidationinterval")
     private String sessionValidationinterval = "15";
+    /**
+     * The session key to use when storing a Date value of the user's last authentication. 
+     */
+    @XmlElement(name = "sessionLastvalidation")
+    private String sessionLastvalidation = "session.lastvalidation";
     /**
      * When using Crowd for single sign-on (SSO), you can specify the SSO cookie name for each application. Under the standard configuration, Crowd will use a single, default cookie name for all Crowd-connected applications. You can override the default with your own cookie name.
      * As well as allowing you to define the SSO cookie name, this feature also allows you to divide your applications into different SSO groups. For example, you might use one SSO token for your public websites and another for your internal websites.

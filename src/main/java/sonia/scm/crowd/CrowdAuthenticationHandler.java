@@ -237,6 +237,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
         p.setProperty("application.name", config.getApplicationName());
         p.setProperty("application.password", config.getApplicationPassword());
         p.setProperty("session.validationinterval", config.getSessionValidationinterval());
+        p.setProperty("session.lastvalidation", config.getSessionLastvalidation());
         p.setProperty("cookie.tokenkey", config.getCookieTokenkey());
         p.setProperty("http.max.connections", config.getHttpMaxConnections());
         p.setProperty("http.timeout", config.getHttpTimeout());
