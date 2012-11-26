@@ -32,6 +32,28 @@ package sonia.scm.crowd;
  *
  */
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sonia.scm.ConfigChangedListener;
+import sonia.scm.SCMContextProvider;
+import sonia.scm.config.ScmConfiguration;
+import sonia.scm.plugin.ext.Extension;
+import sonia.scm.store.Store;
+import sonia.scm.store.StoreFactory;
+import sonia.scm.user.User;
+import sonia.scm.util.AssertUtil;
+import sonia.scm.util.Util;
+import sonia.scm.web.security.AuthenticationHandler;
+import sonia.scm.web.security.AuthenticationResult;
+
 import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.ExpiredCredentialException;
@@ -50,26 +72,6 @@ import com.atlassian.crowd.service.client.ClientPropertiesImpl;
 import com.atlassian.crowd.service.client.CrowdClient;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sonia.scm.ConfigChangedListener;
-import sonia.scm.SCMContextProvider;
-import sonia.scm.config.ScmConfiguration;
-import sonia.scm.plugin.ext.Extension;
-import sonia.scm.store.Store;
-import sonia.scm.store.StoreFactory;
-import sonia.scm.user.User;
-import sonia.scm.util.AssertUtil;
-import sonia.scm.util.Util;
-import sonia.scm.web.security.AuthenticationHandler;
-import sonia.scm.web.security.AuthenticationResult;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * <p>Performs Crowd authentication. Populates the scm-manager user
