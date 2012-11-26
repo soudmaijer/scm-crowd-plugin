@@ -82,7 +82,7 @@ import java.util.Properties;
  */
 @Singleton
 @Extension
-public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener {
+public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener<ScmConfiguration> {
 
     //~--- constructors ---------------------------------------------------------
 
@@ -203,8 +203,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      * @param configuration the new configuration object.
      */
     @Override
-    public void configChanged(Object configuration) {
-        this.scmConfiguration = (ScmConfiguration) configuration;
+    public void configChanged(ScmConfiguration configuration) {
+        this.scmConfiguration = configuration;
         initCrowdClient();
     }
 
