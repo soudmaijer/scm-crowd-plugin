@@ -140,8 +140,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
                 logger.debug("Crowd user: " + crowdUser);
             }
             if (crowdUser != null && crowdUser.isActive()) {
-                List<com.atlassian.crowd.model.group.Group> groups = crowdClient.getGroupsForUser(crowdUser.getName(), 0, -1);
-                return new AuthenticationResult(populateUser(crowdUser), populateGroups(groups));
+            	List<String> groups = crowdClient.getNamesOfGroupsForNestedUser(crowdUser.getName(), 0, -1);
+                return new AuthenticationResult(populateUser(crowdUser), groups);
             } else {
                 return AuthenticationResult.NOT_FOUND;
             }
@@ -300,23 +300,6 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
     }
 
     //~--- methods --------------------------------------------------------------
-
-    /**
-     * Populates the List with groups from Crowd Group objects. Scm manager
-     * only needs String values.
-     *
-     * @param crowdGroups Crowd groups
-     * @return List of String values
-     */
-    private List<String> populateGroups(List<com.atlassian.crowd.model.group.Group> crowdGroups) {
-        List<String> groups = new ArrayList<String>();
-
-        for (com.atlassian.crowd.model.group.Group crowdGroup : crowdGroups) {
-            groups.add(crowdGroup.getName());
-        }
-
-        return groups;
-    }
 
     /**
      * Populates an scm User with the properties of a Crowd User.
