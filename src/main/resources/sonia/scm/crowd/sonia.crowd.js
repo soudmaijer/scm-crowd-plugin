@@ -39,6 +39,8 @@ Sonia.crowd.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   crowdServerUrlAttributeText: 'Crowd server URL',
   sessionValidationintervalAttributeText: 'Session validation interval',
   sessionValidationintervalAttributeHelpText: 'The number of minutes to cache authentication validation in the session. If this value is set to 0, each HTTP request will be authenticated with the Crowd server.',
+  sessionLastvalidationText: 'Session key last validation',
+  sessionLastvalidationHelpText: 'The session key to use when storing a Date value of the users last authentication.',
   cookieTokenkeyText: 'Cookie Tokenkey',
   cookieTokenkeyHelpText: 'When using Crowd for single sign-on (SSO), you can specify the SSO cookie name for each application. Under the standard configuration, Crowd will use a single, default cookie name for all Crowd-connected applications. You can override the default with your own cookie name. As well as allowing you to define the SSO cookie name, this feature also allows you to divide your applications into different SSO groups. For example, you might use one SSO token for your public websites and another for your internal websites.',
   httpProxyHostText: 'Proxy host',
@@ -79,6 +81,12 @@ Sonia.crowd.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name : 'sessionValidationinterval',
         allowBlank : false,
         helpText: this.sessionValidationintervalAttributeHelpText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.sessionLastvalidationText,
+        name : 'sessionLastvalidation',
+        allowBlank : false,
+        helpText: this.sessionLastvalidationHelpText
       },{
         xtype : 'textfield',
         fieldLabel : this.cookieTokenkeyText,
