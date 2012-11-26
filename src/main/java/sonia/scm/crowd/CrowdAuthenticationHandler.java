@@ -32,6 +32,28 @@ package sonia.scm.crowd;
  *
  */
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sonia.scm.ConfigChangedListener;
+import sonia.scm.SCMContextProvider;
+import sonia.scm.config.ScmConfiguration;
+import sonia.scm.plugin.ext.Extension;
+import sonia.scm.store.Store;
+import sonia.scm.store.StoreFactory;
+import sonia.scm.user.User;
+import sonia.scm.util.AssertUtil;
+import sonia.scm.util.Util;
+import sonia.scm.web.security.AuthenticationHandler;
+import sonia.scm.web.security.AuthenticationResult;
+
 import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.ExpiredCredentialException;
@@ -50,26 +72,6 @@ import com.atlassian.crowd.service.client.ClientPropertiesImpl;
 import com.atlassian.crowd.service.client.CrowdClient;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sonia.scm.ConfigChangedListener;
-import sonia.scm.SCMContextProvider;
-import sonia.scm.config.ScmConfiguration;
-import sonia.scm.plugin.ext.Extension;
-import sonia.scm.store.Store;
-import sonia.scm.store.StoreFactory;
-import sonia.scm.user.User;
-import sonia.scm.util.AssertUtil;
-import sonia.scm.util.Util;
-import sonia.scm.web.security.AuthenticationHandler;
-import sonia.scm.web.security.AuthenticationResult;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * <p>Performs Crowd authentication. Populates the scm-manager user
@@ -82,7 +84,7 @@ import java.util.Properties;
  */
 @Singleton
 @Extension
-public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener {
+public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener<ScmConfiguration> {
 
     //~--- constructors ---------------------------------------------------------
 
@@ -140,8 +142,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
                 logger.debug("Crowd user: " + crowdUser);
             }
             if (crowdUser != null && crowdUser.isActive()) {
-                List<com.atlassian.crowd.model.group.Group> groups = crowdClient.getGroupsForUser(crowdUser.getName(), 0, -1);
-                return new AuthenticationResult(populateUser(crowdUser), populateGroups(groups));
+            	List<String> groups = crowdClient.getNamesOfGroupsForNestedUser(crowdUser.getName(), 0, -1);
+                return new AuthenticationResult(populateUser(crowdUser), groups);
             } else {
                 return AuthenticationResult.NOT_FOUND;
             }
@@ -203,8 +205,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      * @param configuration the new configuration object.
      */
     @Override
-    public void configChanged(Object configuration) {
-        this.scmConfiguration = (ScmConfiguration) configuration;
+    public void configChanged(ScmConfiguration configuration) {
+        this.scmConfiguration = configuration;
         initCrowdClient();
     }
 
@@ -300,23 +302,6 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
     }
 
     //~--- methods --------------------------------------------------------------
-
-    /**
-     * Populates the List with groups from Crowd Group objects. Scm manager
-     * only needs String values.
-     *
-     * @param crowdGroups Crowd groups
-     * @return List of String values
-     */
-    private List<String> populateGroups(List<com.atlassian.crowd.model.group.Group> crowdGroups) {
-        List<String> groups = new ArrayList<String>();
-
-        for (com.atlassian.crowd.model.group.Group crowdGroup : crowdGroups) {
-            groups.add(crowdGroup.getName());
-        }
-
-        return groups;
-    }
 
     /**
      * Populates an scm User with the properties of a Crowd User.
