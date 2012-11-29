@@ -43,13 +43,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sonia.scm.ConfigChangedListener;
+import sonia.scm.HandlerEvent;
 import sonia.scm.SCMContextProvider;
 import sonia.scm.config.ScmConfiguration;
+import sonia.scm.group.Group;
+import sonia.scm.group.GroupAllreadyExistExeption;
+import sonia.scm.group.GroupDAO;
+import sonia.scm.group.GroupException;
+import sonia.scm.group.GroupManager;
 import sonia.scm.plugin.ext.Extension;
 import sonia.scm.store.Store;
 import sonia.scm.store.StoreFactory;
 import sonia.scm.user.User;
 import sonia.scm.util.AssertUtil;
+import sonia.scm.util.SecurityUtil;
 import sonia.scm.util.Util;
 import sonia.scm.web.security.AuthenticationHandler;
 import sonia.scm.web.security.AuthenticationResult;
@@ -86,7 +93,9 @@ import com.google.inject.Singleton;
 @Extension
 public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener<ScmConfiguration> {
 
-    //~--- constructors ---------------------------------------------------------
+	
+	
+	//~--- constructors ---------------------------------------------------------
 
     /**
      * Constructs the CrowdAuthenticationHandler and loads the config from the store.
@@ -289,6 +298,14 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
     public String getType() {
         return TYPE;
     }
+    
+    /**
+     * Get The crowd client
+     * @return a crowd configured
+     */
+    public CrowdClient getCrowdClient() {
+    	return crowdClient;
+    }
 
     //~--- set methods ----------------------------------------------------------
 
@@ -299,8 +316,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      */
     public void setConfig(CrowdPluginConfig config) {
         this.config = config;
-    }
-
+    }    
+    
     //~--- methods --------------------------------------------------------------
 
     /**
@@ -349,4 +366,5 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      * ScmManager configuration.
      */
     private ScmConfiguration scmConfiguration;
+    
 }
