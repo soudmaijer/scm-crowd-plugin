@@ -2,12 +2,14 @@ package sonia.scm.crowd;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.web.filter.HttpFilter;
-import sonia.scm.web.security.WebSecurityContext;
 
-import javax.inject.Provider;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,39 +22,36 @@ import java.io.IOException;
 @Singleton
 public class CrowdSSOFilter extends HttpFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(CrowdSSOFilter.class);
+    private final CrowdAuthenticationHandler crowdAuthenticationHandler;
+
     /**
-     * @param securityContextProvider
+     * Default Constructor
      */
     @Inject
-    public CrowdSSOFilter(final Provider<WebSecurityContext> securityContextProvider) {
-        this.securityContextProvider = securityContextProvider;
+    public CrowdSSOFilter(CrowdAuthenticationHandler crowdAuthenticationHandler) {
+        this.crowdAuthenticationHandler = crowdAuthenticationHandler;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected void doFilter(HttpServletRequest request,
-                            HttpServletResponse response,
-                            FilterChain chain)
-            throws IOException, ServletException {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         try {
-            WebSecurityContext securityContext = securityContextProvider.get();
-            if (!securityContext.isAuthenticated()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Current user is not authenticated, trying Crowd SSO.");
+            Subject currentUser = SecurityUtils.getSubject();
+
+            if (!currentUser.isAuthenticated()) {
+                if( crowdAuthenticationHandler.requestContainsToken(request) ) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Current user is not authenticated, trying Crowd SSO.");
+                    }
+                    AuthenticationToken at = new UsernamePasswordToken(CrowdAuthenticationHandler.CROWD_SSO, CrowdAuthenticationHandler.CROWD_SSO);
+                    SecurityUtils.getSecurityManager().authenticate(at);
                 }
-                securityContext.authenticate(request, response, CrowdAuthenticationHandler.CROWD_SSO, CrowdAuthenticationHandler.CROWD_SSO);
             }
         } finally {
             chain.doFilter(request, response);
         }
     }
-
-    /**
-     * The logger for CrowdAuthenticationHandler
-     */
-    private static final Logger log = LoggerFactory.getLogger(CrowdSSOFilter.class);
-
-    private final Provider<WebSecurityContext> securityContextProvider;
 }

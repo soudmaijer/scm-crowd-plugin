@@ -1,12 +1,5 @@
 package sonia.scm.crowd.group;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.InvalidAuthenticationException;
 import com.atlassian.crowd.exception.OperationFailedException;
@@ -14,13 +7,17 @@ import com.atlassian.crowd.search.query.entity.restriction.MatchMode;
 import com.atlassian.crowd.search.query.entity.restriction.TermRestriction;
 import com.atlassian.crowd.search.query.entity.restriction.constants.GroupTermKeys;
 import com.atlassian.crowd.service.client.CrowdClient;
-import com.google.inject.Inject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sonia.scm.crowd.CrowdAuthenticationHandler;
 import sonia.scm.group.Group;
 import sonia.scm.group.GroupManager;
 import sonia.scm.group.GroupManagerDecorator;
 import sonia.scm.search.SearchRequest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CrowdGroupManagerDecorator extends GroupManagerDecorator {
 
@@ -41,7 +38,7 @@ public class CrowdGroupManagerDecorator extends GroupManagerDecorator {
     //~--- methods --------------------------------------------------------------
 
 	/**
-	 * Search in {@link DefaultGroupManager} and in Crowd Groups
+	 * Search in {@link SearchRequest} and in Crowd Groups
 	 */
 	@Override
 	public Collection<Group> search(SearchRequest searchRequest) {

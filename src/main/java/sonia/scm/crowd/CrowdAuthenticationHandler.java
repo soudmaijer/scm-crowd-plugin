@@ -32,35 +32,6 @@ package sonia.scm.crowd;
  *
  */
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import sonia.scm.ConfigChangedListener;
-import sonia.scm.HandlerEvent;
-import sonia.scm.SCMContextProvider;
-import sonia.scm.config.ScmConfiguration;
-import sonia.scm.group.Group;
-import sonia.scm.group.GroupAllreadyExistExeption;
-import sonia.scm.group.GroupDAO;
-import sonia.scm.group.GroupException;
-import sonia.scm.group.GroupManager;
-import sonia.scm.plugin.ext.Extension;
-import sonia.scm.store.Store;
-import sonia.scm.store.StoreFactory;
-import sonia.scm.user.User;
-import sonia.scm.util.AssertUtil;
-import sonia.scm.util.SecurityUtil;
-import sonia.scm.util.Util;
-import sonia.scm.web.security.AuthenticationHandler;
-import sonia.scm.web.security.AuthenticationResult;
-
 import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.ExpiredCredentialException;
@@ -79,6 +50,27 @@ import com.atlassian.crowd.service.client.ClientPropertiesImpl;
 import com.atlassian.crowd.service.client.CrowdClient;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sonia.scm.ConfigChangedListener;
+import sonia.scm.SCMContextProvider;
+import sonia.scm.config.ScmConfiguration;
+import sonia.scm.net.Proxies;
+import sonia.scm.plugin.ext.Extension;
+import sonia.scm.store.Store;
+import sonia.scm.store.StoreFactory;
+import sonia.scm.user.User;
+import sonia.scm.util.AssertUtil;
+import sonia.scm.util.Util;
+import sonia.scm.web.security.AuthenticationHandler;
+import sonia.scm.web.security.AuthenticationResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * <p>Performs Crowd authentication. Populates the scm-manager user
@@ -93,9 +85,8 @@ import com.google.inject.Singleton;
 @Extension
 public class CrowdAuthenticationHandler implements AuthenticationHandler, ConfigChangedListener<ScmConfiguration> {
 
-	
-	
-	//~--- constructors ---------------------------------------------------------
+
+    //~--- constructors ---------------------------------------------------------
 
     /**
      * Constructs the CrowdAuthenticationHandler and loads the config from the store.
@@ -134,7 +125,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
                 username = null;
                 password = null;
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Crowd SSO authenticate for token: "+ crowdHttpAuthenticator.getToken(request));
+                    logger.debug("Crowd SSO authenticate for token: " + crowdHttpAuthenticator.getToken(request));
                 }
                 crowdUser = crowdHttpAuthenticator.getUser(request);
             } else {
@@ -151,7 +142,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
                 logger.debug("Crowd user: " + crowdUser);
             }
             if (crowdUser != null && crowdUser.isActive()) {
-            	List<String> groups = crowdClient.getNamesOfGroupsForNestedUser(crowdUser.getName(), 0, -1);
+                List<String> groups = crowdClient.getNamesOfGroupsForNestedUser(crowdUser.getName(), 0, -1);
                 return new AuthenticationResult(populateUser(crowdUser), groups);
             } else {
                 return AuthenticationResult.NOT_FOUND;
@@ -184,20 +175,24 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
             return AuthenticationResult.FAILED;
         } catch (OperationFailedException e) {
             if (logger.isWarnEnabled()) {
-                logger.warn("Operation failed: "+ e.getMessage());
+                logger.warn("Operation failed: " + e.getMessage());
             }
             return AuthenticationResult.FAILED;
         } catch (InvalidTokenException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Invalid token found in request. "+ e.getMessage());
+                logger.debug("Invalid token found in request. " + e.getMessage());
             }
             return AuthenticationResult.FAILED;
         } catch (ApplicationAccessDeniedException e) {
             if (logger.isWarnEnabled()) {
-                logger.warn("Application not permitted to access Crowd: "+ e.getMessage());
+                logger.warn("Application not permitted to access Crowd: " + e.getMessage());
             }
             return AuthenticationResult.FAILED;
         }
+    }
+
+    public boolean requestContainsToken(HttpServletRequest request) {
+        return StringUtils.isNotEmpty(crowdHttpAuthenticator.getToken(request));
     }
 
     /**
@@ -227,7 +222,6 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      */
     @Override
     public synchronized void init(SCMContextProvider context) {
-
         config = store.get();
 
         if (config == null) {
@@ -242,7 +236,6 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      * upon configuration changes.
      */
     private void initCrowdClient() {
-
         Properties p = new Properties();
         p.setProperty("crowd.server.url", config.getCrowdServerUrl());
         p.setProperty("application.name", config.getApplicationName());
@@ -253,9 +246,11 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
         p.setProperty("http.max.connections", config.getHttpMaxConnections());
         p.setProperty("http.timeout", config.getHttpTimeout());
 
-        if (scmConfiguration.isEnableProxy()) {
+
+        if (Proxies.isEnabled(scmConfiguration, config.getCrowdServerUrl())) {
             p.setProperty("http.proxy.host", scmConfiguration.getProxyServer());
             p.setProperty("http.proxy.port", String.valueOf(scmConfiguration.getProxyPort()));
+
             if (Util.isNotEmpty(scmConfiguration.getProxyUser())) {
                 p.setProperty("http.proxy.username", scmConfiguration.getProxyUser());
             }
@@ -266,7 +261,7 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
 
         ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(p);
         crowdClient = new RestCrowdClientFactory().newInstance(clientProperties);
-        crowdHttpAuthenticator  = new CrowdHttpAuthenticatorImpl(crowdClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
+        crowdHttpAuthenticator = new CrowdHttpAuthenticatorImpl(crowdClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
     }
 
     /**
@@ -298,13 +293,14 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
     public String getType() {
         return TYPE;
     }
-    
+
     /**
      * Get The crowd client
+     *
      * @return a crowd configured
      */
     public CrowdClient getCrowdClient() {
-    	return crowdClient;
+        return crowdClient;
     }
 
     //~--- set methods ----------------------------------------------------------
@@ -316,8 +312,8 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      */
     public void setConfig(CrowdPluginConfig config) {
         this.config = config;
-    }    
-    
+    }
+
     //~--- methods --------------------------------------------------------------
 
     /**
@@ -366,5 +362,4 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
      * ScmManager configuration.
      */
     private ScmConfiguration scmConfiguration;
-    
 }

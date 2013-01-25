@@ -1,18 +1,5 @@
 package sonia.scm.crowd.user;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import sonia.scm.crowd.CrowdAuthenticationHandler;
-import sonia.scm.search.SearchRequest;
-import sonia.scm.user.User;
-import sonia.scm.user.UserManager;
-import sonia.scm.user.UserManagerDecorator;
-
 import com.atlassian.crowd.exception.ApplicationPermissionException;
 import com.atlassian.crowd.exception.InvalidAuthenticationException;
 import com.atlassian.crowd.exception.OperationFailedException;
@@ -20,7 +7,17 @@ import com.atlassian.crowd.search.query.entity.restriction.MatchMode;
 import com.atlassian.crowd.search.query.entity.restriction.TermRestriction;
 import com.atlassian.crowd.search.query.entity.restriction.constants.GroupTermKeys;
 import com.atlassian.crowd.service.client.CrowdClient;
-import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sonia.scm.crowd.CrowdAuthenticationHandler;
+import sonia.scm.search.SearchRequest;
+import sonia.scm.user.User;
+import sonia.scm.user.UserManager;
+import sonia.scm.user.UserManagerDecorator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CrowdUserManagerDecorator extends UserManagerDecorator {
 
@@ -42,7 +39,7 @@ public class CrowdUserManagerDecorator extends UserManagerDecorator {
 	// --------------------------------------------------------------
 
 	/**
-	 * Search in {@link DefaultGroupManager} and in Crowd Groups
+	 * Search in {@link SearchRequest} and in Crowd Groups
 	 */
 	@Override
 	public Collection<User> search(SearchRequest searchRequest) {

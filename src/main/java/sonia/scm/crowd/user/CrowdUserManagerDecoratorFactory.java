@@ -1,7 +1,6 @@
 package sonia.scm.crowd.user;
 
 import com.google.inject.Inject;
-
 import sonia.scm.crowd.CrowdAuthenticationHandler;
 import sonia.scm.plugin.ext.Extension;
 import sonia.scm.user.UserManager;
