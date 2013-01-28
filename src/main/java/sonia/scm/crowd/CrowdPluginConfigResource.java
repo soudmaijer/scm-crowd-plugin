@@ -35,8 +35,8 @@ package sonia.scm.crowd;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
-//~--- JDK imports ------------------------------------------------------------
+import org.apache.shiro.SecurityUtils;
+import sonia.scm.security.Role;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -48,6 +48,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  * <p>Rest service for the configuration options. See the General configuration
@@ -79,6 +81,7 @@ public class CrowdPluginConfigResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public CrowdPluginConfig getConfig() {
+        SecurityUtils.getSubject().checkRole(Role.ADMIN);
         return authenticationHandler.getConfig();
     }
 
@@ -96,6 +99,7 @@ public class CrowdPluginConfigResource {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response setConfig(@Context UriInfo uriInfo, CrowdPluginConfig config)
             throws IOException {
+        SecurityUtils.getSubject().checkRole(Role.ADMIN);
         authenticationHandler.storeConfig(config);
         return Response.created(uriInfo.getRequestUri()).build();
     }
