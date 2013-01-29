@@ -9,7 +9,7 @@ import sonia.scm.user.UserManagerDecoratorFactory;
 @Extension
 public class CrowdUserManagerDecoratorFactory implements UserManagerDecoratorFactory {
 
-	/** Inject the crowdAutentication Handler */
+	/** Inject the crowdAuthenticationHandler */
 	@Inject
 	private CrowdAuthenticationHandler crowdAuthenticationHandler;
 	

@@ -11,7 +11,7 @@ import sonia.scm.plugin.ext.Extension;
 public class CrowdGroupManagerDecoratorFactory implements GroupManagerDecoratorFactory {
 
 	
-	/** Inject the crowdAutentication Handler */
+	/** Inject the crowdAuthenticationHandler */
 	@Inject
 	private CrowdAuthenticationHandler crowdAuthenticationHandler;
 
