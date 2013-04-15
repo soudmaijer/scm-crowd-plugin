@@ -3,6 +3,7 @@ package sonia.scm.crowd;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -42,7 +43,7 @@ public class CrowdSSOFilter extends HttpFilter {
             Subject currentUser = SecurityUtils.getSubject();
 
             if (!currentUser.isAuthenticated()) {
-                if( crowdAuthenticationHandler.requestContainsToken(request) ) {
+                if (crowdAuthenticationHandler.requestContainsToken(request)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Current user is not authenticated, trying Crowd SSO.");
                     }
@@ -50,6 +51,8 @@ public class CrowdSSOFilter extends HttpFilter {
                     SecurityUtils.getSecurityManager().authenticate(at);
                 }
             }
+        } catch (AuthenticationException authenticationException) {
+            chain.doFilter(request, response);
         } finally {
             chain.doFilter(request, response);
         }
