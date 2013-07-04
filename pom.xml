@@ -26,13 +26,13 @@
             <url>http://maven.scm-manager.org/nexus/content/groups/public</url>
         </repository>
         <repository>
-            <id>atlassian-public-m2-repo</id>
+            <id>atlassian-public-maven-repo</id>
             <name>atlassian public maven repository</name>
-            <url>http://repository.atlassian.com/maven2/</url>
+            <url>https://maven.atlassian.com/content/repositories/public</url>
         </repository>
     </repositories>
     <properties>
-        <crowd.version>2.6.1</crowd.version>
+        <crowd.version>2.6.3</crowd.version>
     </properties>
     <dependencies>
         <!-- compile scope -->
