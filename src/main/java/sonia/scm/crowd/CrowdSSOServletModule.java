@@ -8,7 +8,7 @@ public class CrowdSSOServletModule extends ServletModule {
 
     @Override
     protected void configureServlets() {
-        filter("/*").through(CrowdSSOFilter.class);
+        filter("/api/rest/authentication/logout*").through(CrowdSingleSignOutFilter.class);
     }
 }
 
