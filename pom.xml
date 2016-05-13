@@ -36,7 +36,8 @@
     <dependencies>
         <!-- compile scope -->
         <dependency>
-            <groupId>com.atlassian.crowd</groupId>
+        <!--<groupId>com.atlassian.crowd</groupId> Old group id -->
+            <groupId>sonia.scm.plugins</groupId>
             <artifactId>crowd-integration-client-rest</artifactId>
             <version>${crowd.version}</version>
             <scope>compile</scope>
