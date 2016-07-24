@@ -65,7 +65,7 @@ public class CrowdUserManagerDecorator extends UserManagerDecorator {
 		CrowdClient crowdClient = crowdAuthenticationHandler.getCrowdClient();
 
 		try {
-			List<com.atlassian.crowd.model.user.User> searchUsers = crowdClient.searchUsers(new TermRestriction(GroupTermKeys.NAME, MatchMode.STARTS_WITH, searchRequest.getQuery()), 0, -1);
+			List<com.atlassian.crowd.model.user.User> searchUsers = crowdClient.searchUsers(new TermRestriction<String>(GroupTermKeys.NAME, MatchMode.STARTS_WITH, searchRequest.getQuery()), 0, -1);
 
 			for (com.atlassian.crowd.model.user.User userCrowd : searchUsers) {
 				users.add(new User(userCrowd.getName(), userCrowd.getDisplayName(), userCrowd.getEmailAddress()));

@@ -38,7 +38,7 @@ public class CrowdSingleSignOutFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
-            if (crowdAuthenticationHandler.getCrowdHttpAuthenticator().isAuthenticated(request, response)) {
+            if (crowdAuthenticationHandler.getCrowdHttpAuthenticator().checkAuthenticated(request, response).isAuthenticated()) {
                 logout(request, response);
             }
         } catch (OperationFailedException e) {
