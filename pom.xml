@@ -31,7 +31,7 @@
         </repository>
     </repositories>
     <properties>
-        <crowd.version>2.6.3</crowd.version>
+        <crowd.version>2.9.1</crowd.version>
     </properties>
     <dependencies>
         <!-- compile scope -->
