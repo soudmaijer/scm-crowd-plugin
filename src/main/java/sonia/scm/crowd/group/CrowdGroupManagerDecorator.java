@@ -63,7 +63,7 @@ public class CrowdGroupManagerDecorator extends GroupManagerDecorator {
 		CrowdClient crowdClient = crowdAuthenticationHandler.getCrowdClient();
 
 		try {
-			List<com.atlassian.crowd.model.group.Group> searchGroups = crowdClient.searchGroups(new TermRestriction(GroupTermKeys.NAME, MatchMode.STARTS_WITH, searchRequest.getQuery()), 0, -1);
+			List<com.atlassian.crowd.model.group.Group> searchGroups = crowdClient.searchGroups(new TermRestriction<String>(GroupTermKeys.NAME, MatchMode.STARTS_WITH, searchRequest.getQuery()), 0, -1);
 
 			for (com.atlassian.crowd.model.group.Group groupCrowd : searchGroups) {
 				groups.add(new Group(CrowdAuthenticationHandler.TYPE, groupCrowd.getName()));
