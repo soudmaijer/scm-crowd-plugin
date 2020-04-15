@@ -26,7 +26,7 @@
         </repository>
         <repository>
             <id>atlassian-public-maven-repo</id>
-            <name>atlassian public maven repository</name>
+            <name>Atlassian Public Maven Repository</name>
             <url>https://packages.atlassian.com/maven-public-legacy</url>
         </repository>
     </repositories>
