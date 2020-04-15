@@ -4,7 +4,7 @@
     <parent>
         <artifactId>scm-plugins</artifactId>
         <groupId>sonia.scm.plugins</groupId>
-        <version>1.27</version>
+        <version>1.35</version>
     </parent>
     <groupId>sonia.scm.plugins</groupId>
     <artifactId>scm-crowd-plugin</artifactId>
@@ -27,7 +27,7 @@
         <repository>
             <id>atlassian-public-maven-repo</id>
             <name>Atlassian Public Maven Repository</name>
-            <url>https://maven.atlassian.com/content/repositories/public</url>
+            <url>https://packages.atlassian.com/maven-public-legacy</url>
         </repository>
     </repositories>
     <properties>

@@ -1,7 +1,8 @@
 package sonia.scm.crowd;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -9,19 +10,20 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sonia.scm.web.filter.HttpFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import sonia.scm.plugin.ext.Extension;
+import sonia.scm.user.User;
+import sonia.scm.web.filter.AutoLoginModule;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Performs authentication based on the Crowd SSO cookie value.
  */
 @Singleton
-public class CrowdSSOFilter extends HttpFilter {
+@Extension
+public class CrowdSSOFilter implements AutoLoginModule {
 
     private static final Logger log = LoggerFactory.getLogger(CrowdSSOFilter.class);
     private final CrowdAuthenticationHandler crowdAuthenticationHandler;
@@ -34,11 +36,8 @@ public class CrowdSSOFilter extends HttpFilter {
         this.crowdAuthenticationHandler = crowdAuthenticationHandler;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-
+    @Override
+    public User authenticate(HttpServletRequest request, HttpServletResponse response, Subject subject) {
         try {
             Subject currentUser = SecurityUtils.getSubject();
 
@@ -47,14 +46,17 @@ public class CrowdSSOFilter extends HttpFilter {
                     if (log.isDebugEnabled()) {
                         log.debug("Current user is not authenticated, trying Crowd SSO.");
                     }
-                    AuthenticationToken at = new UsernamePasswordToken(CrowdAuthenticationHandler.CROWD_SSO, CrowdAuthenticationHandler.CROWD_SSO);
-                    SecurityUtils.getSecurityManager().authenticate(at);
+                    AuthenticationToken token = new UsernamePasswordToken(CrowdAuthenticationHandler.CROWD_SSO,
+                            CrowdAuthenticationHandler.CROWD_SSO);
+
+                    subject.login(token);
+                    return subject.getPrincipals().oneByType(User.class);
                 }
             }
         } catch (AuthenticationException authenticationException) {
-            chain.doFilter(request, response);
-        } finally {
-            chain.doFilter(request, response);
+            return null;
         }
+
+        return null;
     }
 }

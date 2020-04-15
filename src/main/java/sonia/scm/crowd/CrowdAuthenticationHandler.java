@@ -295,12 +295,21 @@ public class CrowdAuthenticationHandler implements AuthenticationHandler, Config
     }
 
     /**
-     * Get The crowd client
+     * Gets the crowd client.
      *
-     * @return a crowd configured
+     * @return the configured crowd client
      */
     public CrowdClient getCrowdClient() {
         return crowdClient;
+    }
+
+    /**
+     * Gets the crowd http authenticator.
+     *
+     * @return the configured crowd http authenticator
+     */
+    public CrowdHttpAuthenticator getCrowdHttpAuthenticator() {
+        return crowdHttpAuthenticator;
     }
 
     //~--- set methods ----------------------------------------------------------
